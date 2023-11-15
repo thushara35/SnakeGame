@@ -39,7 +39,7 @@ class SnakeGameControllerTest {
         State state = new State("Test123", 2, 2, 0, new Fruit(1, 1), snake);
 
         when(snakeGameService.createStateObject(2, 2)).thenReturn(state);
-        mockMvc.perform(get("/gameBoard/new/{width}/{height}", 2, 2)).andExpect(status().isOk())
+        mockMvc.perform(get("/game-board/new").param("width","2").param("height","2")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.gameId").isNotEmpty())
                 .andExpect(jsonPath("$.score").value(state.getScore()))
                 .andExpect(jsonPath("$.width").value(state.getWidth()))
@@ -49,11 +49,11 @@ class SnakeGameControllerTest {
                 .andDo(print());
 
         when(snakeGameService.createStateObject(1, 1)).thenReturn(null);
-        mockMvc.perform(get("/gameBoard/new/{width}/{height}", 1, 1)).andExpect(status().isNoContent())
+        mockMvc.perform(get("/game-board/new").param("width","1").param("height","1")).andExpect(status().isNoContent())
                 .andDo(print());
 
         when(snakeGameService.createStateObject(0, 0)).thenReturn(null);
-        mockMvc.perform(get("/gameBoard/new/{width}/{height}", 0, 0)).andExpect(status().isNoContent())
+        mockMvc.perform(get("/game-board/new").param("width","0").param("height","0")).andExpect(status().isNoContent())
                 .andDo(print());
 
     }
@@ -71,7 +71,7 @@ class SnakeGameControllerTest {
 
 
         when(snakeGameService.validateRequestAndCountScore(request)).thenReturn(responseState);
-        mockMvc.perform(post("/gameBoard/validate").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/game-board/validate").contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                         // .content(.value("Test1234"))
                 ).andExpect(status().isOk())
@@ -85,7 +85,7 @@ class SnakeGameControllerTest {
 
         FailedResponse failedResponse = new FailedResponse(SnakeGameConstant.INVALID_TICKS, "Invalid ticks");
         when(snakeGameService.validateRequestAndCountScore(request)).thenReturn(failedResponse);
-        mockMvc.perform(post("/gameBoard/validate").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/game-board/validate").contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                         // .content(.value("Test1234"))
                 ).andExpect(status().isIAmATeapot())
